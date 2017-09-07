@@ -6,33 +6,21 @@ import {
 } from 'react-onsenui'
 import TodoForm from './components/TodoForm'
 import TodoItem from './components/TodoItem'
-import todos from './model/todos'
+import { connect } from 'react-redux'
+import * as actions from './redux/actions'
 
 class App extends Component {
 
-  constructor(props){
-    super(props)
-    this.state = {
-      list: todos.get()
-    }
-  }
-
   onSubmit = (value) => {
-    this.setState({
-      list: todos.add(value)
-    });
+    this.props.dispatch(actions.add(value));
   }
 
   onCheckboxChange = index => {
-    this.setState({
-      list:todos.markAsDone(index)
-    });
+    this.props.dispatch(actions.toggle(index));
   }
 
   onDeleteClick = index => {
-    this.setState({
-      list:todos.deleteItem(index)
-    });
+    this.props.dispatch(actions.deleteItem(index));
   }
   
   renderToolbar = () => {
@@ -55,7 +43,7 @@ class App extends Component {
 
   render () {
 
-    const todos = this.state.list.map(this.renderTodo);
+    const todos = this.props.todos.map(this.renderTodo);
 
     return (
       <Page renderToolbar={this.renderToolbar}>
@@ -68,4 +56,6 @@ class App extends Component {
   }
 }
 
-export default App
+const mapStateToProps = state => ({todos:state.list})
+
+export default connect(mapStateToProps)(App)
