@@ -7,16 +7,23 @@ import { Provider } from 'react-redux'
 import { createStore, applyMiddleware, compose } from 'redux'
 import logger from 'redux-logger'
 import reducers from './redux/reducers'
+import storage from './model/storage'
+import storageMiddleware from './redux/storageMiddleware'
 
-const store = createStore(reducers, undefined, compose(
-    applyMiddleware(logger),
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-));
+storage.get().then(initialState => {
+    const store = createStore(reducers, initialState, compose(
+        applyMiddleware(storageMiddleware),
+        applyMiddleware(logger),
+        window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+    ));
+    
+    const app = (
+        <Provider store={store}>
+            <App />
+        </Provider>
+    );
+    
+    ReactDOM.render(app, document.getElementById('root'));
+});
 
-const app = (
-    <Provider store={store}>
-        <App />
-    </Provider>
-);
 
-ReactDOM.render(app, document.getElementById('root'));
