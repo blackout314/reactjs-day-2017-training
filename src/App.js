@@ -2,45 +2,24 @@ import React, { Component } from 'react'
 import { 
   Page, 
   Toolbar, 
-  List, 
-  ListItem, 
-  Checkbox, 
-  Input,
-  Icon,
-  Ripple
+  List
 } from 'react-onsenui'
-
-const STYLES = {
-  form: {
-    width: '85%'
-  },
-  input: {
-    width: '100%'
-  }
-}
+import TodoForm from './components/TodoForm'
+import TodoItem from './components/TodoItem'
 
 class App extends Component {
 
   constructor(props){
     super(props)
     this.state = {
-      newElementValue: '',
       list: []
     }
   }
 
-  onNewValueChange = (event) => {
+  onSubmit = (value) => {
     this.setState({
-      newElementValue:event.target.value
-    });
-  }
-
-  onSubmit = (event) => {
-    event.preventDefault();
-    this.setState({
-      newElementValue: '',
       list: [...this.state.list, {
-        value: this.state.newElementValue,
+        value,
         checked: false
       }]
     });
@@ -69,58 +48,25 @@ class App extends Component {
     );
   }
 
-  renderList () {
-
-    return this.state.list.map((element, index) => {
-
-      let textStyle = {
-        flexGrow: 8
-      };
-      
-      if(element.checked){
-        textStyle = {
-          ...textStyle,
-          textDecoration: 'line-through',
-          color: '#999999'
-        }
-      }
-
-      return(
-        <ListItem>
-          <div className='left'>
-            <Checkbox onChange={() => this.onCheckboxChange(index)} checked={element.checked}/>
-          </div>
-          <div className='center' style={{display:'flex'}}>
-            <span style={textStyle}>{element.value}</span>
-            <div style={{flexGrow:2, textAlign: 'center'}} onClick={() => this.onDeleteClick(index)}>
-              <Ripple />
-              <Icon icon="fa-times-circle"/>
-            </div>
-          </div>
-        </ListItem>
-      );
-    });
+  renderTodo = (todo, index) => {
+    return (
+      <TodoItem 
+        key={index} 
+        todo={todo} 
+        onCheckboxClick={() => this.onCheckboxChange(index)} 
+        onDeleteClick={() => this.onDeleteClick(index)} />
+    );
   }
 
   render () {
+
+    const todos = this.state.list.map(this.renderTodo);
+
     return (
       <Page renderToolbar={this.renderToolbar}>
         <List>
-          <ListItem>
-            <div className='left'>
-              <Checkbox disabled/>
-            </div>
-            <div className='center'>
-              <form style={STYLES.form} onSubmit={this.onSubmit}>
-                <Input 
-                  style={STYLES.input} 
-                  value={this.state.newElementValue} 
-                  onChange={this.onNewValueChange}
-                  />
-              </form>
-            </div>
-          </ListItem>
-          {this.renderList()}
+          <TodoForm onSubmit={this.onSubmit}/>
+          {todos}
         </List>
       </Page>    
     );
