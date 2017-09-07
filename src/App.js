@@ -6,37 +6,32 @@ import {
 } from 'react-onsenui'
 import TodoForm from './components/TodoForm'
 import TodoItem from './components/TodoItem'
+import todos from './model/todos'
 
 class App extends Component {
 
   constructor(props){
     super(props)
     this.state = {
-      list: []
+      list: todos.get()
     }
   }
 
   onSubmit = (value) => {
     this.setState({
-      list: [...this.state.list, {
-        value,
-        checked: false
-      }]
+      list: todos.add(value)
     });
   }
 
   onCheckboxChange = index => {
-    const element = this.state.list[index];
-    element.checked = !element.checked;
     this.setState({
-      list:this.state.list
+      list:todos.markAsDone(index)
     });
   }
 
   onDeleteClick = index => {
-    this.state.list.splice(index, 1)
     this.setState({
-      list:this.state.list
+      list:todos.deleteItem(index)
     });
   }
   
