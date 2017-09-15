@@ -42,7 +42,7 @@ reducers[ACTION_TYPES.TOGGLE] = (state, action) => {
     }
 }
 
-reducers[ACTION_TYPES.READ_TODOS_SUCCESS] = (state, action) => {
+reducers[ACTION_TYPES.TODOS_RECEIVED] = (state, action) => {
     return {
         ...state,
         list:[...action.payload]

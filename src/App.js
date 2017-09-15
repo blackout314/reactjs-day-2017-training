@@ -16,15 +16,15 @@ class App extends Component {
   }
 
   onSubmit = (value) => {
-    this.props.dispatch(actions.add(value));
+    this.props.dispatch(actions.addRequest(value));
   }
 
   onCheckboxChange = index => {
-    this.props.dispatch(actions.toggle(index));
+    this.props.dispatch(actions.toggleRequest(index));
   }
 
   onDeleteClick = index => {
-    this.props.dispatch(actions.deleteItem(index));
+    this.props.dispatch(actions.deleteRequest(index));
   }
   
   renderToolbar = () => {
