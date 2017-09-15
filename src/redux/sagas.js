@@ -4,10 +4,11 @@ import { ACTION_TYPES } from './actions';
 import todos from '../model/todos';
 import ons from 'onsenui';
 
-function* basicRestSaga(generator) {
+function* fetchTodos() {
     try{
         yield put(actions.startLoading());
-        yield* generator();
+        const list = yield call(todos.get);
+        yield put(actions.todosReceived(list));
     }catch(e){
         yield call(ons.notification.alert, 'Error during network communicaton');
     }finally{
@@ -15,25 +16,32 @@ function* basicRestSaga(generator) {
     }
 }
 
-function* fetchTodos() {
-    yield* basicRestSaga(function* () {
-        const list = yield call(todos.get);
-        yield put(actions.todosReceived(list));
-    });
-}
-
 function* addTodo(action) {
-    yield* basicRestSaga(function* () {
-        const list = yield call(todos.add, action.payload);
-        yield put(actions.todosReceived(list));
-    });
+    const oldList = yield select(state => state.list)
+    try{
+        yield put(actions.startLoading());
+        yield put(actions.add(action.payload))
+        yield call(todos.add, action.payload);
+    }catch(e){
+        yield put(actions.todosReceived(oldList));
+        yield call(ons.notification.alert, 'Error during network communicaton');
+    }finally{
+        yield put(actions.stopLoading());
+    }
 }
 
 function* toggleTodo(action) {
-    yield* basicRestSaga(function* () {
-        const list = yield call(todos.toggle, action.payload);
-        yield put(actions.todosReceived(list));
-    });
+    const oldList = yield select(state => state.list)
+    try{
+        yield put(actions.startLoading());
+        yield put(actions.toggle(action.payload));
+        yield call(todos.toggle, action.payload);
+    }catch(e){
+        yield put(actions.todosReceived(oldList));
+        yield call(ons.notification.alert, 'Error during network communicaton');
+    }finally{
+        yield put(actions.stopLoading());
+    }
 }
 
 function* deleteTodo(action) {
@@ -48,10 +56,17 @@ function* deleteTodo(action) {
         return
     }
 
-    yield* basicRestSaga(function* () {
-        const list = yield call(todos.delete, action.payload);
-        yield put(actions.todosReceived(list));
-    });
+    const oldList = yield select(state => state.list)
+    try{
+        yield put(actions.startLoading());
+        yield put(actions.deleteItem(action.payload));
+        yield call(todos.delete, action.payload);
+    }catch(e){
+        yield put(actions.todosReceived(oldList));
+        yield call(ons.notification.alert, 'Error during network communicaton');
+    }finally{
+        yield put(actions.stopLoading());
+    }
 }
 
 export default function* () {
