@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { 
   Page, 
   Toolbar, 
-  List
+  List,
+  Icon
 } from 'react-onsenui'
 import TodoForm from './components/TodoForm'
 import TodoItem from './components/TodoItem'
@@ -26,11 +27,22 @@ class App extends Component {
   onDeleteClick = index => {
     this.props.dispatch(actions.deleteRequest(index));
   }
+
+  renderIcon = () => {
+    if(!this.props.loading){
+      return <noscript />
+    }
+
+    return <Icon spin icon='md-spinner' />
+  }
   
   renderToolbar = () => {
     return (
       <Toolbar>
         <div className='center'>Grocery List</div>
+        <div className='right' style={{textAlign:'center'}}>
+          {this.renderIcon()}
+        </div>
       </Toolbar>
     );
   }
@@ -60,6 +72,9 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => ({todos:state.list})
+const mapStateToProps = state => ({
+  todos:state.list,
+  loading: state.loading
+})
 
 export default connect(mapStateToProps)(App)

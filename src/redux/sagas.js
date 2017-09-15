@@ -5,34 +5,42 @@ import todos from '../model/todos';
 import ons from 'onsenui';
 
 function* fetchTodos() {
+    yield put(actions.startLoading());
     const list = yield call(todos.get);
     yield put(actions.todosReceived(list));
+    yield put(actions.stopLoading());
 }
 
 function* addTodo(action) {
+    yield put(actions.startLoading());
     const list = yield call(todos.add, action.payload);
-    yield put(actions.todosReceived(list))
+    yield put(actions.todosReceived(list));
+    yield put(actions.stopLoading());
 }
 
 function* toggleTodo(action) {
-    const list = yield call(todos.toggle, action.payload)
-    yield put(actions.todosReceived(list))
+    yield put(actions.startLoading());
+    const list = yield call(todos.toggle, action.payload);
+    yield put(actions.todosReceived(list));
+    yield put(actions.stopLoading());
 }
 
 function* deleteTodo(action) {
-    const element = yield select(state => state.list[action.payload])
+    yield put(actions.startLoading());
+    const element = yield select(state => state.list[action.payload]);
     
     const params = {
         message: `Do you want to remove ${element.value}?`
-    }
-    
-    const confirmed = yield call(ons.notification.confirm, params)
+    };
+
+    const confirmed = yield call(ons.notification.confirm, params);
     if(!confirmed){
         return
     }
 
-    const list = yield call(todos.delete, action.payload)
-    yield put(actions.todosReceived(list))
+    const list = yield call(todos.delete, action.payload);
+    yield put(actions.todosReceived(list));
+    yield put(actions.stopLoading());
 }
 
 export default function* () {
