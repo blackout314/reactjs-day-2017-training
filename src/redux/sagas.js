@@ -1,7 +1,8 @@
-import { call, takeLatest, put, takeEvery } from 'redux-saga/effects';
+import { call, takeLatest, put, takeEvery, select } from 'redux-saga/effects';
 import * as actions from './actions';
 import { ACTION_TYPES } from './actions';
 import todos from '../model/todos';
+import ons from 'onsenui';
 
 function* fetchTodos() {
     const list = yield call(todos.get);
@@ -19,6 +20,17 @@ function* toggleTodo(action) {
 }
 
 function* deleteTodo(action) {
+    const element = yield select(state => state.list[action.payload])
+    
+    const params = {
+        message: `Do you want to remove ${element.value}?`
+    }
+    
+    const confirmed = yield call(ons.notification.confirm, params)
+    if(!confirmed){
+        return
+    }
+
     const list = yield call(todos.delete, action.payload)
     yield put(actions.todosReceived(list))
 }
