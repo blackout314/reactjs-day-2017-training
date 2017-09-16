@@ -38,6 +38,16 @@ app.delete('/todo/:id', (req, res) => {
   delay().then(() => res.send(todos.deleteItem(index)));
 });
 
+app.post('/login', (req, res) => {
+  delay(500).then(() => {
+    if(req.body === 'password'){
+      res.status(200).send('ok')
+    }else{
+      res.status(401).send('Invalid Login')
+    }
+  })
+});
+
 app.listen(PORT, () => {
   console.log(`Server Listening on port ${PORT}`);
 });

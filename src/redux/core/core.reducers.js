@@ -1,7 +1,9 @@
 import { ACTION_TYPES } from './core.actions';
 
 const INITIAL_STATE = {
-    list: []
+    list: [],
+    user: undefined,
+    loginError: undefined
 };
 
 const reducers = {};
@@ -46,6 +48,30 @@ reducers[ACTION_TYPES.TODOS_RECEIVED] = (state, action) => {
     return {
         ...state,
         list:[...action.payload]
+    }
+}
+
+reducers[ACTION_TYPES.LOGIN_REQUEST_SUCCESS] = (state, action) => {
+    return {
+        ...state,
+        user:action.payload,
+        loginError: undefined
+    }
+}
+
+reducers[ACTION_TYPES.LOGIN_REQUEST_ERROR] = (state, action) => {
+    console.log(action.payload.message)
+    return {
+        ...state,
+        user: undefined,
+        loginError: action.payload.message
+    }
+}
+
+reducers[ACTION_TYPES.LOGOUT] = (state, action) => {
+    return {
+        ...state,
+        user: undefined
     }
 }
 

@@ -4,7 +4,9 @@ import * as coreActions from './core.actions';
 import { ACTION_TYPES } from './core.actions';
 import * as uiActions from '../ui/ui.actions';
 import todos from '../../model/todos';
+import user from '../../model/user';
 import ons from 'onsenui';
+import Home from '../../pages/Home/Home'
 
 function* fetchTodos() {
     try{
@@ -78,8 +80,27 @@ function* deleteTodo(action) {
     }
 }
 
+function* login(action) {
+    try{
+        yield put(uiActions.startLoading());
+        const loggedUser = yield call(user.login, action.payload.username, action.payload.password);
+        yield put(coreActions.loginRequestSuccess(loggedUser));
+        yield put(uiActions.pushPage({component: Home, key: 'Home'}));
+    }catch(e){
+        yield put(coreActions.loginRequestError(e))
+    }finally{
+        yield put(uiActions.stopLoading());
+    }
+}
+
+function* logout() {
+    yield put(uiActions.popPage());
+}
+
 export default function* () {
     yield takeLatest(ACTION_TYPES.READ_TODOS, fetchTodos);
+    yield takeLatest(ACTION_TYPES.LOGIN_REQUEST, login);
+    yield takeLatest(ACTION_TYPES.LOGOUT, logout);
     yield takeEvery(ACTION_TYPES.ADD_REQUEST, addTodo);
     yield takeEvery(ACTION_TYPES.DELETE_REQUEST, deleteTodo);
     yield takeEvery(ACTION_TYPES.TOGGLE_REQUEST, toggleTodo);
