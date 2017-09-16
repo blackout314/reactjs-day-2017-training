@@ -11,6 +11,10 @@ import * as actions from './redux/actions'
 
 class App extends Component {
 
+  componentWillMount() {
+    this.props.dispatch(actions.readTodos())
+  }
+
   onSubmit = (value) => {
     this.props.dispatch(actions.add(value));
   }

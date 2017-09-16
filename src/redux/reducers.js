@@ -42,6 +42,13 @@ reducers[ACTION_TYPES.TOGGLE] = (state, action) => {
     }
 }
 
+reducers[ACTION_TYPES.READ_TODOS_SUCCESS] = (state, action) => {
+    return {
+        ...state,
+        list:[...action.payload]
+    }
+}
+
 export default (state = INITIAL_STATE, action) => {
     const reducer = reducers[action.type] || (() => state);
     return reducer(state,action)

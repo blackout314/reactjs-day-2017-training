@@ -1,5 +1,6 @@
 {
   "name": "reactjs-day-2017-training",
+  "proxy": "http://localhost:3001",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -53,6 +54,7 @@
     "whatwg-fetch": "2.0.3"
   },
   "scripts": {
+    "server": "node ./server",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
