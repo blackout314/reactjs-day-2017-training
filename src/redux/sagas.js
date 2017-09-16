@@ -1,3 +1,4 @@
+import { delay } from 'redux-saga'
 import { call, takeLatest, put, takeEvery, select } from 'redux-saga/effects';
 import * as actions from './actions';
 import { ACTION_TYPES } from './actions';
@@ -32,10 +33,28 @@ function* addTodo(action) {
 
 function* toggleTodo(action) {
     const oldList = yield select(state => state.list)
+
+    function* toggleApi(index) {
+        const MAX_ATTEMPS = 5
+        const REQUEST_DELAY = 2000
+        for(let i = 0; i < MAX_ATTEMPS; i++) {
+          try {
+            const result = yield call(todos.toggle, index);
+            return result
+          } catch(err) {
+            if(i < MAX_ATTEMPS - 1) {
+              yield call(delay, REQUEST_DELAY);
+            }
+          }
+        }
+
+        throw new Error('API request failed');
+    }
+
     try{
         yield put(actions.startLoading());
         yield put(actions.toggle(action.payload));
-        yield call(todos.toggle, action.payload);
+        yield* toggleApi(action.payload)
     }catch(e){
         yield put(actions.todosReceived(oldList));
         yield call(ons.notification.alert, 'Error during network communicaton');
