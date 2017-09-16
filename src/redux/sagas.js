@@ -4,29 +4,39 @@ import { ACTION_TYPES } from './actions';
 import todos from '../model/todos';
 import ons from 'onsenui';
 
+function* basicRestSaga(generator) {
+    try{
+        yield put(actions.startLoading());
+        yield* generator();
+    }catch(e){
+        yield call(ons.notification.alert, 'Error during network communicaton');
+    }finally{
+        yield put(actions.stopLoading());
+    }
+}
+
 function* fetchTodos() {
-    yield put(actions.startLoading());
-    const list = yield call(todos.get);
-    yield put(actions.todosReceived(list));
-    yield put(actions.stopLoading());
+    yield* basicRestSaga(function* () {
+        const list = yield call(todos.get);
+        yield put(actions.todosReceived(list));
+    });
 }
 
 function* addTodo(action) {
-    yield put(actions.startLoading());
-    const list = yield call(todos.add, action.payload);
-    yield put(actions.todosReceived(list));
-    yield put(actions.stopLoading());
+    yield* basicRestSaga(function* () {
+        const list = yield call(todos.add, action.payload);
+        yield put(actions.todosReceived(list));
+    });
 }
 
 function* toggleTodo(action) {
-    yield put(actions.startLoading());
-    const list = yield call(todos.toggle, action.payload);
-    yield put(actions.todosReceived(list));
-    yield put(actions.stopLoading());
+    yield* basicRestSaga(function* () {
+        const list = yield call(todos.toggle, action.payload);
+        yield put(actions.todosReceived(list));
+    });
 }
 
 function* deleteTodo(action) {
-    yield put(actions.startLoading());
     const element = yield select(state => state.list[action.payload]);
     
     const params = {
@@ -38,9 +48,10 @@ function* deleteTodo(action) {
         return
     }
 
-    const list = yield call(todos.delete, action.payload);
-    yield put(actions.todosReceived(list));
-    yield put(actions.stopLoading());
+    yield* basicRestSaga(function* () {
+        const list = yield call(todos.delete, action.payload);
+        yield put(actions.todosReceived(list));
+    });
 }
 
 export default function* () {

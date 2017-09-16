@@ -23,7 +23,14 @@ app.post('/todo', (req, res) => {
 
 app.put('/todo/toggle/:id', (req, res) => {
   const index = parseInt(req.params.id, 10)
-  delay().then(() => res.send(todos.markAsDone(index)));
+  delay().then(() => {
+    const r = random(0,1,false)
+    if(r){
+      res.send(todos.markAsDone(index))
+    }else{
+      res.status(500).send()
+    }
+  });
 });
 
 app.delete('/todo/:id', (req, res) => {
