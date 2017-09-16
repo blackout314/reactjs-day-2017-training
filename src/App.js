@@ -8,7 +8,8 @@ import {
 import TodoForm from './components/TodoForm'
 import TodoItem from './components/TodoItem'
 import { connect } from 'react-redux'
-import * as actions from './redux/actions'
+import * as actions from './redux/core/core.actions'
+import * as uiActions from './redux/ui/ui.actions'
 
 class App extends Component {
 
@@ -25,7 +26,7 @@ class App extends Component {
   }
 
   onDeleteClick = index => {
-    this.props.dispatch(actions.deleteRequest(index));
+    this.props.dispatch(uiActions.askDelete(index));
   }
 
   renderIcon = () => {
@@ -73,8 +74,8 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  todos:state.list,
-  loading: state.loading
+  todos:state.core.list,
+  loading: state.ui.loading
 })
 
 export default connect(mapStateToProps)(App)

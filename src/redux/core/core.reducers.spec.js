@@ -1,5 +1,5 @@
-import * as actions from './actions'
-import reducers from './reducers'
+import * as actions from './core.actions'
+import reducers from './core.reducers'
 
 describe('reducer', () => {
     test('it should add an element to the list when an ADD action is dispatched', () => {

@@ -1,33 +1,34 @@
 import { delay } from 'redux-saga'
 import { call, takeLatest, put, takeEvery, select } from 'redux-saga/effects';
-import * as actions from './actions';
-import { ACTION_TYPES } from './actions';
-import todos from '../model/todos';
+import * as coreActions from './core.actions';
+import { ACTION_TYPES } from './core.actions';
+import * as uiActions from '../ui/ui.actions';
+import todos from '../../model/todos';
 import ons from 'onsenui';
 
 function* fetchTodos() {
     try{
-        yield put(actions.startLoading());
+        yield put(uiActions.startLoading());
         const list = yield call(todos.get);
-        yield put(actions.todosReceived(list));
+        yield put(coreActions.todosReceived(list));
     }catch(e){
         yield call(ons.notification.alert, 'Error during network communicaton');
     }finally{
-        yield put(actions.stopLoading());
+        yield put(uiActions.stopLoading());
     }
 }
 
 function* addTodo(action) {
-    const oldList = yield select(state => state.list)
+    const oldList = yield select(state => state.core.list)
     try{
-        yield put(actions.startLoading());
-        yield put(actions.add(action.payload))
+        yield put(uiActions.startLoading());
+        yield put(coreActions.add(action.payload))
         yield call(todos.add, action.payload);
     }catch(e){
-        yield put(actions.todosReceived(oldList));
+        yield put(coreActions.todosReceived(oldList));
         yield call(ons.notification.alert, 'Error during network communicaton');
     }finally{
-        yield put(actions.stopLoading());
+        yield put(uiActions.stopLoading());
     }
 }
 
@@ -52,39 +53,28 @@ function* toggleTodo(action) {
     }
 
     try{
-        yield put(actions.startLoading());
-        yield put(actions.toggle(action.payload));
+        yield put(uiActions.startLoading());
+        yield put(coreActions.toggle(action.payload));
         yield* toggleApi(action.payload)
     }catch(e){
-        yield put(actions.todosReceived(oldList));
+        yield put(coreActions.todosReceived(oldList));
         yield call(ons.notification.alert, 'Error during network communicaton');
     }finally{
-        yield put(actions.stopLoading());
+        yield put(uiActions.stopLoading());
     }
 }
 
 function* deleteTodo(action) {
-    const element = yield select(state => state.list[action.payload]);
-    
-    const params = {
-        message: `Do you want to remove ${element.value}?`
-    };
-
-    const confirmed = yield call(ons.notification.confirm, params);
-    if(!confirmed){
-        return
-    }
-
-    const oldList = yield select(state => state.list)
+    const oldList = yield select(state => state.core.list)
     try{
-        yield put(actions.startLoading());
-        yield put(actions.deleteItem(action.payload));
+        yield put(uiActions.startLoading());
+        yield put(coreActions.deleteItem(action.payload));
         yield call(todos.delete, action.payload);
     }catch(e){
-        yield put(actions.todosReceived(oldList));
+        yield put(coreActions.todosReceived(oldList));
         yield call(ons.notification.alert, 'Error during network communicaton');
     }finally{
-        yield put(actions.stopLoading());
+        yield put(uiActions.stopLoading());
     }
 }
 

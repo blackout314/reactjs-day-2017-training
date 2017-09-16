@@ -1,7 +1,6 @@
-import { ACTION_TYPES } from './actions';
+import { ACTION_TYPES } from './core.actions';
 
 const INITIAL_STATE = {
-    loading: false,
     list: []
 };
 
@@ -49,21 +48,6 @@ reducers[ACTION_TYPES.TODOS_RECEIVED] = (state, action) => {
         list:[...action.payload]
     }
 }
-
-reducers[ACTION_TYPES.START_LOADING] = (state) => {
-    return {
-        ...state,
-        loading: true
-    }
-}
-
-reducers[ACTION_TYPES.STOP_LOADING] = (state) => {
-    return {
-        ...state,
-        loading: false
-    }
-}
-
 
 export default (state = INITIAL_STATE, action) => {
     const reducer = reducers[action.type] || (() => state);

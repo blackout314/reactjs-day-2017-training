@@ -5,14 +5,29 @@ import 'onsenui/css/onsenui.css';
 import 'onsenui/css/onsen-css-components.css';
 import { Provider } from 'react-redux'
 import createSagaMiddleware from 'redux-saga'
-import { createStore, applyMiddleware, compose } from 'redux'
+import { createStore, applyMiddleware, compose, combineReducers } from 'redux'
 import logger from 'redux-logger'
 import storage from './model/storage'
-import reducers from './redux/reducers'
-import sagas from './redux/sagas'
+import coreReducers from './redux/core/core.reducers'
+import uiReducers from './redux/ui/ui.reducers'
+import coreSagas from './redux/core/core.sagas'
+import uiSagas from './redux/ui/ui.sagas'
 import storageMiddleware from './redux/storageMiddleware'
+import { fork, all } from 'redux-saga/effects';
 
 const sagaMiddleware = createSagaMiddleware()
+
+const rootSaga = function* () {
+    yield all([
+        fork(coreSagas),
+        fork(uiSagas)
+    ]);
+}
+
+const reducers = combineReducers({ 
+    core: coreReducers, 
+    ui: uiReducers 
+});
 
 storage.get().then(initialState => {
     const store = createStore(reducers, initialState, compose(
@@ -22,7 +37,7 @@ storage.get().then(initialState => {
         window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     ));
     
-    sagaMiddleware.run(sagas)
+    sagaMiddleware.run(rootSaga)
 
     const app = (
         <Provider store={store}>
